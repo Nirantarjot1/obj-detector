@@ -3,41 +3,42 @@ stats="";
 objects= [];
 
 function setup(){
-    canvas=createCanvas(640 , 420);
+    canvas=createCanvas(380 , 380);
     canvas.center();
+
+    video=createCapture(VIDEO);
+    video.size(380 , 380);
+    video.hide();
+
     objectDetector=ml5.objectDetector('cocossd' , modelLoaded);
 document.getElementById("stats").innerHTML="Status  : Detecting Objects ";
 }
 
 function preload(){
-    img=loadImage("dog_cat.jpg")
+    img=loadImage("dog_cat.jpg");
 }
 
 function draw(){
-    image(img , 0 , 0 , 640 , 420);
-
-    fill("#fc4235");
-    text("Dog" , 45 , 75);
-    noFill();
-    stroke("#fc4235");
-    rect(30 , 60 , 450 , 350); 
-
-    fill("#3a4abd");
-    text("Cat" , 320 , 120);
-    noFill();
-    stroke("#3a4abd");
-    rect(300 , 90 , 270 , 320);
+    image(video , 0 , 0 , 380 , 380);
 
     if(stats != "")
     {
+        r=random(255);
+        g=random(255);
+        b=random(255); 
+        objectDetector.detect(video , gotResult);
+
         for(i=0 ; i  <objects.length ; i++)
         {
+  
             document.getElementById("stats").innerHTML="Status : Object Detected";
-            fill("#eb4334");
+            document.getElementById("number_of_objects").innerHTML="Number of objects detected are" + objects.length;
+
+            fill(r,g,b);
             percent=floor(objects[i].confidence * 100 );
             text(objects[i].label + " " +percent+ "%" , objects[i].x , objects[i].y);
             noFill();
-            stroke("#eb4334");
+            stroke(r,g,b);
             rect(objects[i].x , objects[i].y , objects[i].width , objects[i].height);
         }
     }
@@ -49,7 +50,7 @@ function draw(){
 function modelLoaded(){
     console.log("Model is Loaded");
     stats=true;
-    objectDetector.detect(img , gotResult);
+objectDetector.detect(video , gotResult);
 }
 
 function gotResult(error ,  results){
@@ -58,4 +59,9 @@ function gotResult(error ,  results){
     }
 console.log(results);
 objects=results;
+}
+
+function start(){
+    objectDetector=ml5.objectDetector('cocossd' , modelLoaded);
+document.getElementById("stats").innerHTML="Status  : Detecting Objects ";
 }
